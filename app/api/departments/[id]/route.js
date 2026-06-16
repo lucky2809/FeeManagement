@@ -32,6 +32,8 @@ export async function PATCH(request, { params }) {
   }
 }
 
+export { PATCH as PUT };
+
 export async function DELETE(request, { params }) {
   try {
     const decoded = await authenticateRequest(request);

@@ -76,7 +76,7 @@ export default function CoursesPage() {
       department: item.department?._id || item.department,
       duration: item.duration?.toString() || '',
       durationUnit: item.durationUnit || 'Years',
-      totalFee: item.totalFee?.toString() || '',
+      totalFee: item.totalFeePerYear?.toString() || '',
       description: item.description || '',
       isActive: item.isActive !== false,
     });
@@ -101,10 +101,15 @@ export default function CoursesPage() {
     try {
       const url = editItem ? `/api/courses/${editItem._id}` : '/api/courses';
       const method = editItem ? 'PUT' : 'POST';
+      const { totalFee, ...rest } = form;
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, duration: Number(form.duration), totalFee: Number(form.totalFee) || 0 }),
+        body: JSON.stringify({
+          ...rest,
+          duration: Number(form.duration),
+          totalFeePerYear: Number(totalFee) || 0,
+        }),
       });
       const data = await res.json();
       if (data.success) {

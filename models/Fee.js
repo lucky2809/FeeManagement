@@ -14,8 +14,8 @@ const FeeSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Academic year is required'],
       trim: true,
-      // Format: "2023-24"
-      match: [/^\d{4}-\d{2,4}$/, 'Academic year format should be YYYY-YY'],
+    // Format: "2023-24" or "2023-2024"
+      match: [/^\d{4}-\d{2,4}$/, 'Academic year format should be YYYY-YY or YYYY-YYYY'],
     },
     yearNumber: {
       type: Number,
@@ -74,7 +74,7 @@ FeeSchema.virtual('remainingAmount').get(function () {
 });
 
 // Auto-update status based on amounts
-FeeSchema.pre('save', function (next) {
+FeeSchema.pre('save', async function () {
   const effective = this.totalFee - this.discount + this.fineAmount;
   const remaining = effective - this.paidAmount;
 
@@ -87,8 +87,6 @@ FeeSchema.pre('save', function (next) {
   } else {
     this.status = 'Pending';
   }
-
-  next();
 });
 
 // Unique per student per academic year per year number
@@ -96,4 +94,9 @@ FeeSchema.index({ student: 1, academicYear: 1, yearNumber: 1 }, { unique: true }
 FeeSchema.index({ status: 1 });
 FeeSchema.index({ student: 1 });
 
-export default mongoose.models.Fee || mongoose.model('Fee', FeeSchema);
+// Always recompile in development to pick up hook changes
+if (mongoose.models.Fee) {
+  delete mongoose.models.Fee;
+}
+
+export default mongoose.model('Fee', FeeSchema);

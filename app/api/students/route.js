@@ -42,12 +42,15 @@ export async function GET(request) {
       ];
     }
 
+    const gender = searchParams.get('gender') || '';
+
     if (degree) query.degree = degree;
     if (course) query.course = course;
     if (department) query.department = department;
     if (status) query.status = status;
     if (admissionYear) query.admissionYear = parseInt(admissionYear);
     if (currentYear) query.currentYear = parseInt(currentYear);
+    if (gender) query.gender = gender;
 
     const total = await Student.countDocuments(query);
     const students = await Student.find(query)

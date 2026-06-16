@@ -54,7 +54,7 @@ export default function DegreesPage() {
       name: item.name,
       shortName: item.shortName,
       description: item.description || '',
-      totalYears: item.totalYears?.toString() || '',
+      totalYears: item.duration?.toString() || '',
       isActive: item.isActive !== false,
     });
     setErrors({});
@@ -76,10 +76,11 @@ export default function DegreesPage() {
     try {
       const url = editItem ? `/api/degrees/${editItem._id}` : '/api/degrees';
       const method = editItem ? 'PUT' : 'POST';
+      const { totalYears, ...rest } = form;
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, totalYears: Number(form.totalYears) }),
+        body: JSON.stringify({ ...rest, duration: Number(totalYears) }),
       });
       const data = await res.json();
       if (data.success) {
@@ -176,7 +177,7 @@ export default function DegreesPage() {
               )}
 
               <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pt-3 border-t border-gray-100 dark:border-gray-700">
-                <span>{degree.totalYears} Year{degree.totalYears !== 1 ? 's' : ''} Program</span>
+                <span>{degree.duration} Year{degree.duration !== 1 ? 's' : ''} Program</span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => openEdit(degree)}
